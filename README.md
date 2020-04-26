@@ -2,7 +2,7 @@
 Composto por dois programas, o Board Builder e o Scrabble Junior.
 
 ## Board Builder
-~CONTEÚDO~
+`CONTEÚDO`
 
 ## Scrabble Junior
-~CONTEÚDO~
+`CONTEÚDO`
