@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
+#define MAX_HAND_SIZE 7
 
 class Player
 {
 private:
-	int NumPlayers;
-	vector<char> players;
-	vector<int> score;
+	unsigned score;
+	char hand[MAX_HAND_SIZE];
 public:
-	explicit Player(int NumPlayers);
+	unsigned getScore() const;
+	void setScore(const unsigned& score);
 };
