@@ -7,11 +7,16 @@
 #include "Pool.h"
 #include <algorithm>
 #include <random>
-#define ROOT_PATH "Ambiente de Trabalho"
+#include <sstream>
+#include <ctime>
+
+#define ROOT_PATH "C:\\Users\\joaof\\OneDrive\\Ambiente de Trabalho\\"
+#define MAX_HAND_SIZE 7
+
 using namespace std;
 
 template <class T>
-bool getInput(T& var) {
+bool getInput(T &var) {
     T aux;
     if (cin >> aux && cin.peek() == '\n') {
         var = aux;
@@ -27,9 +32,9 @@ bool getInput(T& var) {
 int getNumPlayers()
 {
     int numPlayers;
-    cout << "How many players (2 to 4) will play the game? \n";
+    cout << "How many players (2 to 4) will play the game?";
     while (!getInput(numPlayers) || numPlayers < 2 || numPlayers >= 5)
-        cout << "Invalid number of players, try again (2 to 4).";
+        cout << endl << "Invalid number of players, try again (2 to 4).";
     return numPlayers;
 }
 
@@ -41,7 +46,36 @@ string getFileName()
     return fileName;
 }
 
+void convertCoordinates(const string &coord, int &x, int &y) {
+    y = coord[0] - 'A';
+    x = coord[1] - 'a';
+}
 
+Board parseBoardFile(const string &path, vector<char> &tiles){
+    ifstream fin;
+    unsigned size;
+    string currentLine;
+    string coord;
+    int x, y;
+    char direction;
+    string word;
+    fin.open(path);
+    fin >> size;
+    Board board(size);
+    while(getline(fin, currentLine) && !currentLine.empty()){
+        istringstream(currentLine) >> coord >> direction >> word;
+        convertCoordinates(coord, x, y);
+        for (int i = 0; i < word.size(); i++) {
+            if (direction == 'V')
+                board.setLetter(x, y+i, word[i]);
+            else
+                board.setLetter(x+i, y, word[i]);
+            tiles.push_back(word[i]);
+        }
+    }
+    fin.close();
+    return board;
+}
 
 //não está feita ainda
 void distTiles()
@@ -99,26 +133,9 @@ int points(char tile1, char tile2)
 
 }
 
-//não está terminada
-void saveBoard(const Board &board)
-{
-    int i;
-    ofstream fout;
-    unsigned size = board.getSize();
-    string fileName = ROOT_PATH;
-    fileName += "BOARD.txt";
-    fout.open(fileName);
-    /*for ()
-    {
-
-    }
-    */
-}
-
 //falta loop que diz que a pool está vazia, fora da cadeia de if's
 void winner(int score[4])
 {
-    
     if (score[0] > score[1] > score[2] > score[3])
         cout << "The winner is the Player 1 with " << score[0] << " points.";
     else if (score[1] > score[0] > score[2] > score[3])
@@ -129,49 +146,19 @@ void winner(int score[4])
         cout << "The winner is the Player 4 with " << score[3] << " points.";
 }
 
-
-string getFileName();
-int getNumPlayers();
-void distFirstTiles(vector<char> pool, int& player, const int NumPlayers);
-char firstHouse();
-char put1stTile(char firsthouse);
-char secondHouse();
-char put2ndTile(char secondhouse);
-void distTiles();
-int points(char tile1, char tile2);
-void show(ostream& out);
-void saveBoard(const Board& board);
-void winner(int score[4]);
-
 int main()
 {
-    int score[4] = {0, 0, 0, 0};
-    int numPlayers = getNumPlayers();
-    string fileName = ROOT_PATH;
-    fileName += getFileName();
-    vector<Player> players(numPlayers);
-
-    //swapPlayers
-    /*if (numPlayers == 0)
-        numPlayers = 1;
-    else if (numPlayers == 1)
-        numPlayers = 2;
-    else if (numPlayers == 2)
-        numPlayers = 3;
-    else if (numPlayers == 3)
-        numPlayers = 0;*/
-
-    while (true)
-    {
-        getNumPlayers();
-        getFileName();
-        show(ostream & out);
-
-        winner(int score[4]);
+    srand(time(nullptr));
+    vector<Player> players(getNumPlayers());
+    vector<char> tiles;
+    string filePath = ROOT_PATH;
+    filePath += getFileName();
+    Board board = parseBoardFile(filePath, tiles);
+    Pool pool(tiles);
+    for (Player player : players) {
+        for (int j = 0; j < MAX_HAND_SIZE; j++)
+            player.drawTile(pool);
     }
-    //inicializar board
-    //inicializar pool
-    //distribuir tiles
     //jogo em si 
     return 0;
 }

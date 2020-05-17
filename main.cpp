@@ -8,6 +8,8 @@
 #define MIN_BOARD_SIZE 5
 #define MAX_BOARD_SIZE 20
 
+using namespace std;
+
 template <class T>
 bool getInput(T &var){
     T aux;
@@ -171,7 +173,9 @@ int main() {
         board.show(cout);
         cout << "Enter 'Y' if you want to continue.";
     } while(getInput(addingWords) && addingWords == 'Y');
-    cout << "Thank you, saving content now." << endl;
+    cleanConsole();
+    cout << "Thank you, saving content now." << endl << endl;
     saveContent(board, vWords, hWords, vCoords, hCoords);
+    cout << "Save complete. Press any key to close the program.";
     getch();
 }

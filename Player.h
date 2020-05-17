@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
-#define MAX_HAND_SIZE 7
+#include "Pool.h"
 
 class Player
 {
-private:
-	unsigned score;
-	char hand[MAX_HAND_SIZE];
 public:
 	unsigned getScore() const;
 	void setScore(const unsigned& score);
+	void drawTile(Pool &pool);
+private:
+    unsigned score;
+    std::vector<char> hand;
 };
