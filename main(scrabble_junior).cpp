@@ -60,10 +60,10 @@ char firstHouse()
 
 char put1stTile(char firsthouse)
 {
-    char tile1, y;
+    char tile1, z;
     cout << "Play the tile for the house " << firsthouse << " you choose.\nIf you can't play any tile enter 'Z'.";
     cin >> tile1;
-    y = toupper(tile1);
+    z = toupper(tile1);
     //if (tile1 == 'Z')
     //    //tirar tiles atuais e colocar novas de forma aleatória
     //else
@@ -82,10 +82,10 @@ char secondHouse()
 
 char put2ndTile(char secondhouse)
 {
-    char tile2, y;
+    char tile2, z;
     cout << "Play the tile for the house " << secondhouse << " you choose.\nIf you can't play any tile enter 'Z'.";
     cin >> tile2;
-    y = toupper(tile2);
+    z = toupper(tile2);
     //if (tile1 == 'Z')
     //    //tirar tiles atuais e colocar novas de forma aleatória
     //else
