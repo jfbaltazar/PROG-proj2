@@ -27,20 +27,29 @@ unsigned Board::getSize() const {
 }
 
 bool Board::validPos(const int &x, const int &y) const {
-    return (x >= 0) && (x <= this->size) && (y >= 0) && (y <= this->size);
+    return (x >= 0) && (x < this->size) && (y >= 0) && (y < this->size);
 }
 
 void Board::show(ostream &out) const {
-    out << " ";
-    for(int i = 0; i < size; i++){
-        out << " " << (char) i + 'a';
+    out << "   ";
+    for(int x = 0; x < size; x++){ //x indices
+        out << " " << (char) (x + 'a');
     }
-    cout << endl;
+    out << endl << "  " << "/";
+    for(int x = 0; x < 2*size; x++){
+        out << "-";
+    }
+    out << "\\" << endl;
     for(int y = 0; y < size; y++){
-        out << (char) y + 'A';
+        out << (char) (y + 'A') << " " << "|";
         for(int x = 0; x < size; x++){
             out << " " << this->board[x][y];
         }
-        out << endl;
+        out << "|" << endl;
     }
+    out << "  " << "\\";
+    for (int x = 0; x < 2*size; x++) {
+        out << "-";
+    }
+    out << "/" << endl;
 }
