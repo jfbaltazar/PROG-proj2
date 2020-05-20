@@ -32,7 +32,6 @@ bool getInput(T& var) {
     }
 }
 
-//pronta
 int getNumPlayers()
 {
     int numPlayers;
@@ -42,7 +41,6 @@ int getNumPlayers()
     return numPlayers;
 }
 
-//pronta
 string getFileName()
 {
     string fileName;
@@ -51,13 +49,11 @@ string getFileName()
     return fileName;
 }
 
-//pronta
 void convertCoordinates(const string& coord, int& x, int& y) {
     y = coord[0] - 'A';
     x = coord[1] - 'a';
 }
 
-//pronta
 Board parseBoardFile(const string& path, vector<char>& tiles) {
     ifstream fin;
     unsigned size;
@@ -97,8 +93,6 @@ vector<vector<short>> initialPlayStatus(const Board& board) {
 
 bool playRound(Board& board, Player& player, Pool& pool, vector<vector<short>>& playStatus) {
     static bool firstPlay = true;
-
-    //vou colocar aqui aquilo que penso que pediste
     int firsthouse;
     char doTrade, trade;
     int secondhouse;
@@ -156,12 +150,7 @@ bool playRound(Board& board, Player& player, Pool& pool, vector<vector<short>>& 
         }
     }
 
-
-
-    //NãO SEI
-    winner.getScore();
-
-    //termina aqui
+    //winner.getScore();
 
     firstPlay = false;
 }
