@@ -212,3 +212,8 @@ int main()
         cout << "Not possible to execute.\nTry again!\n";
     }
 }
+
+/*HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+SetConsoleTextAttribute(hConsole, 63);
+
+SetConsoleTextAttribute(hConsole, 15);*/
