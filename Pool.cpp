@@ -25,4 +25,6 @@ char Pool::extractTile() {
     return this->tiles[index];
 }
 
-
+bool Pool::isEmpty() const {
+    return this->tiles.empty();
+}

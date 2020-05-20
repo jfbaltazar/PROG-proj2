@@ -1,19 +1,32 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <string>
 #include "Board.h"
 #include "Player.h"
 #include "Pool.h"
-#include <algorithm>
 #include <random>
 #include <sstream>
 #include <ctime>
+#include <conio.h>
+#include <map>
 
 #define ROOT_PATH "C:\\Users\\joaof\\OneDrive\\Ambiente de Trabalho\\"
 #define MAX_HAND_SIZE 7
 
 using namespace std;
+
+/* README
+ * Nota que:
+ * as duas jogadas, se possíveis, são iguais conceptualmente, portanto basta 1 função para as duas;
+ * os pontos estão guardados no Player e portanto não precisas de uma estrutura separada;
+ * a tua função winner não funciona para casos como, por exemplo, p0 > (p1 == p2 == p3) e pode ser bem simplificada
+   para não ser uma cadeia de if-else's, aproveitando, talvez, o facto de os jogadores estarem organizados num vetor;
+ * o vetor playStatus mostra o estado atual de cada peça do tabuleiro, permitindo uma fácil implementação das jogadas;
+ * há umas propriedades muito interessantes sobre como é que o vetor se vai atualizando e como é que sabemos quando somar pontos.
+   se conseguires dominá-las torna-se muito simples usar e manipulá-lo.
+ * a pool estar vazia não é condição suficiente para despertar o fim do jogo. o melhor é ver se as mãos dos jogadores estão todas vazias
+   ou se todos os espaços de letras estão preenchidos.
+ */
 
 template <class T>
 bool getInput(T &var) {
@@ -51,9 +64,8 @@ void convertCoordinates(const string &coord, int &x, int &y) {
     x = coord[1] - 'a';
 }
 
-Board parseBoardFile(const string &path, vector<char> &tiles){
+Board parseBoardFile(const string &path, unsigned &size, vector<char> &tiles){
     ifstream fin;
-    unsigned size;
     string currentLine;
     string coord;
     int x, y;
@@ -75,6 +87,32 @@ Board parseBoardFile(const string &path, vector<char> &tiles){
     }
     fin.close();
     return board;
+}
+
+vector<vector<short>> initialPlayStatus(const Board &board){
+    unsigned size = board.getSize();
+    vector<vector<short>> playStatus(0,vector<short>(0)); //initialize to all zeroes
+    for(int x = 0; x < size; x++){
+        for(int y = 0; y < size; y++){
+            if (!board.getLetter(x-1,y) && !board.getLetter(x,y-1))
+                playStatus[x][y] = 1;
+        }
+    }
+}
+
+bool playRound(Board &board, Player &player, Pool &pool, vector<vector<short>> &playStatus){
+    static bool firstPlay = true;
+
+    firstPlay = false;
+}
+
+void playGame(Board &board, vector<Player> &players, Pool &pool, vector<vector<short>> &playStatus){
+    int currPlayer = 0;
+    bool ended = false;
+    while(!ended){
+        ended = playRound(board, players[currPlayer], pool, playStatus);
+        currPlayer = (currPlayer + 1) % players.size();
+    }
 }
 
 //não está feita ainda
@@ -149,16 +187,24 @@ void winner(int score[4])
 int main()
 {
     srand(time(nullptr));
+    unsigned size;
     vector<Player> players(getNumPlayers());
     vector<char> tiles;
     string filePath = ROOT_PATH;
     filePath += getFileName();
-    Board board = parseBoardFile(filePath, tiles);
+    if (tiles.size() / MAX_HAND_SIZE < players.size()) {
+        cout << "The pool doesn't have enough tiles for this many players. Shutting down." << endl << "Press any key to close.";
+        getch();
+        return 1;
+    }
+    //initializing the game structures
+    Board board = parseBoardFile(filePath, size, tiles);
+    vector<vector<short>> playStatus = initialPlayStatus(board); //2 if coordinate played; 1 if coordinate playable; else 0
     Pool pool(tiles);
-    for (Player player : players) {
+    for (Player &player : players) {
         for (int j = 0; j < MAX_HAND_SIZE; j++)
             player.drawTile(pool);
     }
-    //jogo em si 
-    return 0;
+    //game itself
+    playGame(board, players, pool, playStatus);
 }
