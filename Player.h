@@ -7,8 +7,9 @@ class Player
 public:
 	unsigned getScore() const;
 	void setScore(const unsigned& score);
-	void drawTile(Pool &pool);
+	void drawTile(Pool& pool);
+	void endGame();
 private:
-    unsigned score;
-    std::vector<char> hand;
+	unsigned score;
+	std::vector<char> hand;
 };
