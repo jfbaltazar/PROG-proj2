@@ -95,55 +95,20 @@ vector<vector<short>> initialPlayStatus(const Board& board) {
     }
 }
 
-bool playRound(Board& board, Player& player, Pool& pool, vector<vector<short>>& playStatus, char firsthouse, char secondhouse) {
+bool playRound(Board& board, Player& player, Pool& pool, vector<vector<short>>& playStatus) {
     static bool firstPlay = true;
+
     //vou colocar aqui aquilo que penso que pediste
-    char tile1, tile2;
-    cout << "Play the tile for the house " << firsthouse << " you choose: ";
-    cin >> tile1;
-    tile1 = toupper(tile1);
-    char extractTile(tile1);
-    void addTile(char tile);
-    //mudar cor da tile colocada no board
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, 63); //assim muda também a cor do fundo, no caso penso que até fica melhor, perguntar ao João o que acha
-    //pôr tile
-    SetConsoleTextAttribute(hConsole, 15);
-    
-    char tile2;
-    cout << "Play the tile for the house " << secondhouse << " you choose.\n";
-    cin >> tile2;
-    tile2 = toupper(tile2);
-    char extractTile(tile2);
-    void addTile(char tile);
-    //mudar cor da nova tile
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, 63);
-    //pôr tile
-    SetConsoleTextAttribute(hConsole, 15);
-    //termina aqui
-
-    firstPlay = false;
-}
-
-void playGame(Board& board, vector<Player>& players, Pool& pool, vector<vector<short>>& playStatus) {
-    int currPlayer = 0;
-    bool ended = false;
-    while (!ended) {
-        ended = playRound(board, players[currPlayer], pool, playStatus, firsthouse, secondhouse);
-        currPlayer = (currPlayer + 1) % players.size();
-    }
-}
-
-//está a dar 1 erro
-char firstHouse(vector<char>& tiles)
-{
     int firsthouse;
+    char doTrade, trade;
+    int secondhouse;
+    char tile1, tile2;
+    int winner[4];
     cout << "If you can't play any tile enter 'Z'.\nInsert the house you'll put your first letter (i.e Ca): \n";
     cin >> firsthouse;
-    while (!getInput(firstHouse) || firsthouse != 'Z' || firsthouse != 'y')
+    while (!getInput(firsthouse) || firsthouse != 'Z' || firsthouse != 'y')
         cout << "That house doesn't exist.\nInsert the house you'll put your first letter (i.e Ca): ";
-    
+
     if (firsthouse == 'Z' || firsthouse == 'z')
     {
         char trade1, trade2;
@@ -155,24 +120,24 @@ char firstHouse(vector<char>& tiles)
         {
             cout << "Which tiles do you want to trade? ";
             cin >> trade1; cin >> trade2;
-            Pool addTile(trade1);            //adicionar as tiles que não quer à pool está a dar um erro 
-            Pool addTile(trade2);
-            random_shuffle(tiles.begin(), tiles.end());
             Player drawTile(Pool & pool);
-            Player drawTile(Pool & pool);//adiciona 2 tiles ao jogador (?)
+            Player drawTile(Pool & pool);      
+            pool.addTile(trade1);            
+            pool.addTile(trade2);
         }
-
     }
 
-    return firsthouse;
-   
-}
+    cout << "Play the tile for the house " << firsthouse << " you choose: ";
+    cin >> tile1;
+    tile1 = toupper(tile1);
+    pool.extractTile();
+    pool.addTile(tile1);
+    cout << "Play the tile for the house " << secondhouse << " you choose.\n";
+    cin >> tile2;
+    tile2 = toupper(tile2);
+    char extractTile(tile2);
+    void addTile(char tile);
 
-//está a dar 1 erro
-char secondHouse(vector<char> tiles)
-{
-    char doTrade, trade;
-    int secondhouse;
     cout << "If you don't want to play any tile press 'Y'.Insert the second house: ";
     while (!getInput(secondhouse) || secondhouse != 'Z' || secondhouse != 'y')
         cout << "That house doesn't exist.\nInsert the second house: ";
@@ -186,26 +151,30 @@ char secondHouse(vector<char> tiles)
             cout << "Which tile do you want to trade? ";
             cin >> trade;
             trade = toupper(trade);
-            Pool addTile(trade);            //adicionar tile que não quer à pool
-            random_shuffle(tiles.begin(), tiles.end());
-            Player drawTile(Pool& pool);
+            pool.addTile(trade);            //adicionar tile que não quer à pool
+            player.drawTile(pool);
         }
     }
-    
-    return secondhouse;
+
+
+
+    //NãO SEI
+    winner.getScore();
+
+    //termina aqui
+
+    firstPlay = false;
 }
 
-
-//está a dar um erro ao usar a função endGame da classe Player
-void winner(int score[4], vector<Player> players[4])
-{
-    if (Player endGame())
-    {
-        int maximum = max(score[0], max(score[1], max(score[2], score[3])));
-        cout << "The winner have " << maximum << " points.\nCongradulations!";
+void playGame(Board& board, vector<Player>& players, Pool& pool, vector<vector<short>>& playStatus) {
+    int currPlayer = 0;
+    bool ended = false;
+    while (!ended) {
+        ended = playRound(board, players[currPlayer], pool, playStatus);
+        currPlayer = (currPlayer + 1) % players.size();
     }
-    
 }
+
 
 int main()
 {
@@ -221,7 +190,7 @@ int main()
         return 1;
     }
     //initializing the game structures
-    Board board = parseBoardFile(filePath, size, tiles);
+    Board board = parseBoardFile(filePath, tiles);
     vector<vector<short>> playStatus = initialPlayStatus(board); //2 if coordinate played; 1 if coordinate playable; else 0
     Pool pool(tiles);
     for (Player& player : players) {
@@ -230,20 +199,16 @@ int main()
     }
     //game itself
     playGame(board, players, pool, playStatus);
-    firstHouse(tiles);
     if (playStatus == 2)
     {
         cout << "That house already has a tile on it.\nTry another one.\n";
-        firstHouse(tiles);
     }
     else if (playStatus == 1)
     {
-        playRound( board, player, pool, playStatus, firsthouse, secondhouse);
-
+        playRound(board, player, pool, playStatus);
     }
     else
     {
         cout << "Not possible to execute.\nTry again!\n";
-        firstHouse(tiles);
     }
 }
