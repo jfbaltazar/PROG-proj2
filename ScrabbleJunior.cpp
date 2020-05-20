@@ -13,7 +13,7 @@
 #include <map>
 #include <conio.h>
 
-#define ROOT_PATH "C:\\Users\\joaof\\OneDrive\\Ambiente de Trabalho\\"
+#define ROOT_PATH ""
 #define MAX_HAND_SIZE 7
 
 using namespace std;
