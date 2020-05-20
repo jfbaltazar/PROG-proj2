@@ -4,12 +4,17 @@
 #include <algorithm>
 #include <conio.h> //used for getch()
 
-#define ROOT_PATH "C:\\Users\\joaof\\OneDrive\\Ambiente de Trabalho\\"
+#define ROOT_PATH ""      //the root path for WORDS.txt and BOARD.txt
 #define MIN_BOARD_SIZE 5
 #define MAX_BOARD_SIZE 20
 
 using namespace std;
 
+/**
+ * If successful in receiving a value of type T from the user, write it to var.
+ * @param var Any variable to be assigned a value through cin.
+ * @return True if the assignment is successful.
+ */
 template <class T>
 bool getInput(T &var){
     T aux;
@@ -24,6 +29,10 @@ bool getInput(T &var){
     }
 }
 
+/**
+ * Ask to console for a board size between MIN_BOARD_SIZE and MAX_BOARD_SIZE.
+ * @return The chosen size.
+ */
 unsigned selectSize(){
     unsigned size;
     cout << "Size, please!";
@@ -34,18 +43,26 @@ unsigned selectSize(){
     return size;
 }
 
+/**
+ * Visually clean the console screen.
+ */
 void cleanConsole(){
     cout << flush;
-    system("CLS");
+    system("cls");
 }
 
+/**
+ * Given a word, determine if it is contained in the dictionary "WORDS.txt".
+ * @param word The word to be searched up.
+ * @return True if it is contained.
+ */
 bool validWord(string word){
     ifstream fin;
     string currentWord;
     string path = ROOT_PATH;
     path += "WORDS.txt";
     bool result = false;
-    transform(word.begin(), word.end(), word.begin(), ::tolower);
+    transform(word.begin(), word.end(), word.begin(), ::tolower); //lowercase word, because that's how it shows up in the dictionary.
     fin.open(path);
     while(getline(fin, currentWord)){
         if(currentWord == word) {
@@ -57,12 +74,28 @@ bool validWord(string word){
     return result;
 }
 
+/**
+ * Convert coordinates in the form "Vh", where 'V' is the line and 'h' is the column, to x and y starting at 0.
+ * @param coord Coordinates in the form "Vh".
+ * @param x Corresponding x coordinate.
+ * @param y Corresponding y coordinate.
+ */
 void convertCoordinates(const string &coord, int &x, int &y) {
     y = coord[0] - 'A';
     x = coord[1] - 'a';
 }
 
-bool outOfBounds(Board &board, const string &word, int x, int y, const char &direction){
+/**
+ * Determine if a given word will fit in the board as if it were empty, starting at (x,y) and moving in (direction). Assumes the starting
+ * position is valid.
+ * @param board The board in which to put the word.
+ * @param word The word to try to fit in.
+ * @param x The starting x coordinate.
+ * @param y The starting y coordinate.
+ * @param direction The direction of the word starting from (x,y).
+ * @return True if the word will fit.
+ */
+bool outOfBounds(const Board &board, const string &word, int x, int y, const char &direction){
     if(direction == 'V')
         y += word.size() - 1;
     else
@@ -70,6 +103,19 @@ bool outOfBounds(Board &board, const string &word, int x, int y, const char &dir
     return !board.validPos(x,y);
 }
 
+/**
+ * Try to add a word to the board, starting at (x,y) and moving in (direction), aware of its surroundings. Write it in if possible.
+ * Decompose the analysis of the legality of the word in 3 parts: head, body and tail. Head and tail are symmetric, so
+ * they can be handled simultaneously and clearly. The body must check for "word crossing" and accept it if it's legal.
+ * Important note: refactoring of the function was attempted to avoid writing similar code twice, but it would compromise
+ * readability so it was decided to keep it this way.
+ * @param board The board to which to add word if possible.
+ * @param word The word to write to the board.
+ * @param x The starting x coordinate of the word.
+ * @param y The starting y coordinate of the word.
+ * @param direction The direction of the word starting from (x,y).
+ * @return True if the write operation is succeeded.
+ */
 bool addWord(Board &board, const string &word, int x, int y, char const &direction){
     if(direction == 'V'){
         if ( board.getLetter(x, y-1) || board.getLetter(x, y+word.size()) ) //verify head and tail of V word for unwanted letters
@@ -104,6 +150,15 @@ bool addWord(Board &board, const string &word, int x, int y, char const &directi
     return true; //if successful write, this will be reached.
 }
 
+/**
+ * Using I/O, ask for the 3 defining features of a word insertion (word, start, direction) and handle them accordingly.
+ * If successful in adding the word to the board, save said features to the parameter vectors for later storage.
+ * @param board The board to which a word is to be added.
+ * @param vWords The collection of vertical words ordered by input.
+ * @param hWords The collection of horizontal words ordered by input.
+ * @param vCoords The matching collection of vertical starting coordinates.
+ * @param hCoords The matching collection of horizontal starting coordinates.
+ */
 void manageNewWord(Board &board, vector<string> &vWords, vector<string> &hWords, vector<string> &vCoords, vector<string> &hCoords){
     string word;
     string start;
@@ -146,6 +201,14 @@ void manageNewWord(Board &board, vector<string> &vWords, vector<string> &hWords,
         cout << "I'm sorry, the word cannot fit here." << endl;
 }
 
+/**
+ * Save the board content to BOARD.txt, including a 2D representation of it.
+ * @param board The board to be saved.
+ * @param vWords The collection of vertical words ordered by input.
+ * @param hWords The collection of horizontal words ordered by input.
+ * @param vCoords The matching collection of vertical starting coordinates.
+ * @param hCoords The matching collection of horizontal starting coordinates.
+ */
 void saveContent(const Board &board, const vector<string> &vWords, const vector<string> &hWords, const vector<string> &vCoords, const vector<string> &hCoords){
     ofstream fout;
     unsigned size = board.getSize();
@@ -166,7 +229,7 @@ int main() {
     vector<string> vWords, hWords;
     vector<string> vCoords, hCoords;
     char addingWords;
-    do {
+    do { //adding words to board one at a time
         cleanConsole();
         board.show(cout);
         manageNewWord(board, vWords, hWords, vCoords, hCoords);
